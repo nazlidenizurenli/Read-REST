@@ -1,0 +1,19 @@
+# Java
+/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# General
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
