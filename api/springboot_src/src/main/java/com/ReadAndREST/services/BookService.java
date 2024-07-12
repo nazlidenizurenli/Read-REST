@@ -24,6 +24,10 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
+    public List<Book> searchBooks(String query) {
+        return bookRepository.findByTitleContainingIgnoreCase(query);
+    }
+
     @PostConstruct
     public void init() {
         loadBooksFromCSV();

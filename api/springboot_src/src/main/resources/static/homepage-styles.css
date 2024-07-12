@@ -1,0 +1,103 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.main-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+}
+
+.search-section, .my-books-section {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 48%; /* Adjusted width to fit better with flex-wrap */
+    margin-bottom: 20px; /* Add space below */
+}
+
+.recommended-books-section {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 100%; /* Full width below the other sections */
+    margin-top: 20px;
+}
+
+.search-section h2, .my-books-section h2, .recommended-books-section h2 {
+    color: #333333;
+    margin-bottom: 10px;
+}
+
+.search-section input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-section button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.my-books-section table, .recommended-books-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.my-books-section th, .my-books-section td, .recommended-books-section th, .recommended-books-section td {
+    padding: 15px; /* Increased padding for better spacing */
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.my-books-section th, .recommended-books-section th {
+    background-color: #4CAF50; /* Make header background consistent */
+    color: white;
+    padding: 20px;
+    font-size: 18px;
+}
+
+.recommended-books-section th {
+    background-color: #127fbe; /* Different color for recommended books */
+}
+
+.my-books-section tbody tr, .recommended-books-section tbody tr {
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.my-books-section tbody tr:hover, .recommended-books-section tbody tr:hover {
+    background-color: #f2f2f2;
+}
+
+.my-books-section tbody td, .recommended-books-section tbody td {
+    margin-bottom: 10px; /* Add space between rows */
+    border-bottom: 1px solid #eee; /* Soft bottom border for better visibility */
+}
+
+.my-books-section tbody td:last-child, .recommended-books-section tbody td:last-child {
+    border-bottom: none; /* Remove border for the last row */
+}

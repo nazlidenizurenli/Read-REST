@@ -3,9 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Homepage</title>
+    <title>Welcome to your ReadandREST Book Portal!</title>
+    <link rel="stylesheet" href="homepage-styles.css">
 </head>
 <body>
-    <h1>Welcome to your homepage!</h1>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to your ReadandREST Book Portal!</h1>
+        </div>
+        <div class="main-content">
+            <div class="search-section">
+                <h2>Search All Books</h2>
+                <input type="text" id="searchInput" placeholder="Enter book name...">
+                <button onclick="searchBooks()">Search</button>
+                <div id="searchResults"></div>
+            </div>
+            <div class="my-books-section">
+                <h2>My Books</h2>
+                <table id="myBooksTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="recommended-books-section">
+                <h2>Recommended Books for You</h2>
+                <table id="recommendedBooksTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be dynamically populated -->
+                    </tbody>
+                </table>
+            <div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
 </body>
 </html>

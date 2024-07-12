@@ -19,6 +19,10 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
     public void registerUser(String username, String password) {
         // String hashedPassword = passwordEncoder.encode(password);
         // User newUser = new User(username, hashedPassword);
