@@ -1,19 +1,24 @@
 package com.ReadAndREST.models;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String username;
     private String password;
 
-    // Default constructor
+    // Default constructor (required by JPA)
     public User() {}
 
-    // Parameterized constructor
+    // Constructor with username and password
     public User(String username, String password) {
         this.username = username;
         this.password = password;
