@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to your ReadandREST Book Portal!</title>
     <link rel="stylesheet" href="homepage-styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Add any additional CSS styles as needed */
+    </style>
 </head>
 <body>
     <div class="container">
@@ -51,9 +55,8 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="scripts.js"></script>
     <script>
+        // Function to search books and display results
         function searchBooks() {
             var searchTitle = document.getElementById("searchInput").value.trim();
             if (searchTitle !== "") {
@@ -75,6 +78,7 @@
             }
         }
 
+        // Function to display search results dynamically
         function displaySearchResults(books) {
             var resultsContainer = document.getElementById("searchResults");
             resultsContainer.innerHTML = "";
@@ -82,14 +86,45 @@
             if (books.length === 0) {
                 resultsContainer.innerHTML = "<p>No books found.</p>";
             } else {
-                var tableHtml = "<table><thead><tr><th>Title</th><th>Author</th><th>Genre</th></tr></thead><tbody>";
+                var tableHtml = "<table><thead><tr><th>Title</th><th>Author</th><th>Genre</th><th>Action</th></tr></thead><tbody>";
                 books.forEach(function (book) {
-                    tableHtml += "<tr><td>" + book.title + "</td><td>" + book.author + "</td><td>" + book.genres.join(", ") + "</td></tr>";
+                    tableHtml += "<tr>";
+                    tableHtml += "<td>" + book.title + "</td>";
+                    tableHtml += "<td>" + book.author + "</td>";
+                    tableHtml += "<td>" + book.genres.join(", ") + "</td>";
+                    // Add the add button for each book entry
+                    tableHtml += "<td><button class='add-button' data-book-id='" + book.id + "'>+</button></td>";
+                    tableHtml += "</tr>";
                 });
                 tableHtml += "</tbody></table>";
                 resultsContainer.innerHTML = tableHtml;
             }
         }
+
+        // Event delegation to handle add book functionality
+        $(document).on('click', '.add-button', function() {
+            var bookId = $(this).data('book-id');
+            console.log("Adding book with ID: " + bookId);
+            $.ajax({
+                type: "POST",
+                url: "/mybooks/add",
+                data: {
+                    bookId: bookId
+                },
+                success: function (response) {
+                    alert("Book added successfully!");
+                    // Update UI: Replace add button with checkmark
+                    var addButton = document.querySelector('.add-button[data-book-id="' + bookId + '"]');
+                    addButton.innerHTML = "&#10003;"; // Unicode checkmark symbol
+                    addButton.disabled = true; // Disable button after adding
+        
+                    // Optionally, update My Books table or hide the add button
+                },
+                error: function () {
+                    alert("Error adding book.");
+                }
+            });
+        });
     </script>
 </body>
 </html>

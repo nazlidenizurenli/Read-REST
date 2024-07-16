@@ -32,6 +32,10 @@ public class BookController {
     @GetMapping("/search")
     @ResponseBody
     public List<Book> searchBooks(@RequestParam("query") String query) {
+        List<Book> books = bookService.searchBooks(query);
+        for (Book book : books) {
+            System.out.println("Book Title: " + book.getTitle());
+        }
         return bookService.searchBooks(query);
     }
 }

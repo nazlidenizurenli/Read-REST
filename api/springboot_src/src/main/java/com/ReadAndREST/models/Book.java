@@ -6,13 +6,19 @@ import java.util.Set;
 import java.util.List;
 
 @Entity
+@Table(
+    name = "books",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"title", "author"})
+    }
+)
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title", unique = true)
     private String title;
 
     @Column(name = "author")
