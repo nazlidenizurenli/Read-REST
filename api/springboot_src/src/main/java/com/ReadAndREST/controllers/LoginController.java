@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpSession; 
+
 @Controller
 public class LoginController {
 
     @Autowired
-    private UserService userService; // Autowire UserService
+    private UserService userService;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -23,12 +25,13 @@ public class LoginController {
     @PostMapping("/login")
     public String login(@RequestParam("username") String username,
                         @RequestParam("password") String password,
-                        Model model) {
+                        Model model, HttpSession session) {
 
         // Get user information for the entered username.
         User user = userService.findByUsername(username);
 
         if (user != null && user.getPassword().equals(password)) {
+            session.setAttribute("loggedInUser", user);
             return "redirect:/homepage";
         } else if (user != null && !user.getPassword().equals(password)){
             model.addAttribute("error", "Wrong credentials: Check username and password.");
@@ -41,29 +44,43 @@ public class LoginController {
 
     @PostMapping("/signup")
     public String signup(@RequestParam("username") String username,
-                         @RequestParam("password") String password,
-                         Model model) {
+                        @RequestParam("password") String password,
+                        Model model, HttpSession session) {
 
         // Check if user already exists
         User existingUser = userService.findByUsername(username);
 
         if (existingUser != null && existingUser.getPassword().equals(password)) {
             model.addAttribute("error", "Account already exists. Please login or change username and password.");
-            return "redirect:/login";
+            return "login";
         } else {
             // Create new user
             User newUser = new User();
             newUser.setUsername(username);
-            newUser.setPassword(password); // In a real application, you should hash the password
+            newUser.setPassword(password);
 
             // Save the new user to the database
             userService.save(newUser);
+
+            // Log in the user immediately after sign up
+            session.setAttribute("loggedInUser", newUser); // Store the newly created user in session
+
             return "redirect:/homepage";
         }
     }
 
     @GetMapping("/homepage")
-    public String showHomePage() {
-        return "homepage";
+    public String showHomePage(Model model, HttpSession session) { // Add HttpSession parameter
+        // Retrieve logged-in user from session
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        if (loggedInUser != null) {
+            // Pass user data to the homepage view
+            model.addAttribute("user", loggedInUser);
+            return "homepage";
+        } else {
+            // Handle case where user is not logged in (optional)
+            return "redirect:/login";
+        }
     }
 }

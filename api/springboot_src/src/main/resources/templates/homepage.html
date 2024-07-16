@@ -47,10 +47,49 @@
                         <!-- Table rows will be dynamically populated -->
                     </tbody>
                 </table>
-            <div>
+            </div>
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="scripts.js"></script>
+    <script>
+        function searchBooks() {
+            var searchTitle = document.getElementById("searchInput").value.trim();
+            if (searchTitle !== "") {
+                $.ajax({
+                    type: "GET",
+                    url: "/books/search",
+                    data: {
+                        query: searchTitle
+                    },
+                    success: function (response) {
+                        displaySearchResults(response);
+                    },
+                    error: function () {
+                        alert("Error fetching search results.");
+                    }
+                });
+            } else {
+                alert("Please enter a book title.");
+            }
+        }
+
+        function displaySearchResults(books) {
+            var resultsContainer = document.getElementById("searchResults");
+            resultsContainer.innerHTML = "";
+
+            if (books.length === 0) {
+                resultsContainer.innerHTML = "<p>No books found.</p>";
+            } else {
+                var tableHtml = "<table><thead><tr><th>Title</th><th>Author</th><th>Genre</th></tr></thead><tbody>";
+                books.forEach(function (book) {
+                    tableHtml += "<tr><td>" + book.title + "</td><td>" + book.author + "</td><td>" + book.genres.join(", ") + "</td></tr>";
+                });
+                tableHtml += "</tbody></table>";
+                resultsContainer.innerHTML = tableHtml;
+            }
+        }
+    </script>
 </body>
 </html>

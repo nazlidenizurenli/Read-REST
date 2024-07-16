@@ -1,6 +1,8 @@
 package com.ReadAndREST.models;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 
 @Entity
@@ -10,24 +12,30 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "Book")
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "author")
     private String author;
 
     @ElementCollection
-    private List<String> genres;
+    @CollectionTable(name = "book_genres", joinColumns = @JoinColumn(name = "book_id"))
+    @Column(name = "genre")
+    private Set<String> genres = new HashSet<>();
 
-    // Default constructor required by Hibernate
+    @ManyToMany(mappedBy = "myBooks")
+    private Set<User> owners = new HashSet<>();
+
+    // Constructors, getters, and setters
     public Book() {}
 
-    // Parameterized constructor for creating new books
-    public Book(String title, String author, List<String> genres) {
+    public Book(String title, String author, Set<String> genres) {
         this.title = title;
         this.author = author;
         this.genres = genres;
     }
 
-    // Getters and setters (ensure they are correctly implemented)
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -52,13 +60,19 @@ public class Book {
         this.author = author;
     }
 
-    public List<String> getGenres() {
+    public Set<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<String> genres) {
+    public void setGenres(Set<String> genres) {
         this.genres = genres;
     }
+
+    public Set<User> getOwners() {
+        return owners;
+    }
+
+    public void setOwners(Set<User> owners) {
+        this.owners = owners;
+    }
 }
-
-

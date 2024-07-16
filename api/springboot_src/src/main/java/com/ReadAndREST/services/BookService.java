@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class BookService {
@@ -26,6 +28,10 @@ public class BookService {
 
     public List<Book> searchBooks(String query) {
         return bookRepository.findByTitleContainingIgnoreCase(query);
+    }
+
+    public List<Book> searchBooksByTitle(String title) {
+        return bookRepository.findByTitleContainingIgnoreCase(title);
     }
 
     @PostConstruct
@@ -50,8 +56,10 @@ public class BookService {
                 String genresString = csvRecord.get("Genres");
                 genresString = genresString.replaceAll("\\[", "").replaceAll("\\]", ""); // Remove brackets
                 String[] genresArray = genresString.split(", ");
-                List<String> genresList = Arrays.asList(genresArray);
-                book.setGenres(genresList);
+                // Convert array to Set
+                Set<String> genresSet = new HashSet<>(Arrays.asList(genresArray));
+                // Set genres in Book entity
+                book.setGenres(genresSet);
                 books.add(book);
             }
             bookRepository.saveAll(books);

@@ -1,9 +1,8 @@
 package com.ReadAndREST.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -15,10 +14,17 @@ public class User {
     private String username;
     private String password;
 
-    // Default constructor (required by JPA)
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+        name = "user_book",
+        joinColumns = { @JoinColumn(name = "user_id") },
+        inverseJoinColumns = { @JoinColumn(name = "book_id") }
+    )
+    private Set<Book> myBooks = new HashSet<>();
+
+    // Constructors, getters, and setters
     public User() {}
 
-    // Constructor with username and password
     public User(String username, String password) {
         this.username = username;
         this.password = password;
@@ -47,5 +53,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Book> getMyBooks() {
+        return myBooks;
+    }
+
+    public void setMyBooks(Set<Book> myBooks) {
+        this.myBooks = myBooks;
     }
 }
