@@ -14,11 +14,7 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class BookService {
@@ -39,36 +35,46 @@ public class BookService {
         loadBooksFromCSV();
     }
     @Transactional
-    public void loadBooksFromCSV() {
-        try {
-            ClassPathResource resource = new ClassPathResource("books.csv");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
+public void loadBooksFromCSV() {
+    try {
+        ClassPathResource resource = new ClassPathResource("books.csv");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
 
-            CSVParser csvParser = CSVFormat.DEFAULT
-                    .withFirstRecordAsHeader()
-                    .parse(reader);
+        CSVParser csvParser = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .parse(reader);
 
-            List<Book> books = new ArrayList<>();
-            for (CSVRecord csvRecord : csvParser) {
-                Book book = new Book();
-                book.setTitle(csvRecord.get("Book"));
-                book.setAuthor(csvRecord.get("Author"));
-                String genresString = csvRecord.get("Genres");
-                genresString = genresString.replaceAll("\\[", "").replaceAll("\\]", ""); // Remove brackets
-                String[] genresArray = genresString.split(", ");
-                // Convert array to Set
-                Set<String> genresSet = new HashSet<>(Arrays.asList(genresArray));
-                // Set genres in Book entity
-                book.setGenres(genresSet);
-                books.add(book);
+        for (CSVRecord csvRecord : csvParser) {
+            String title = csvRecord.get("Book");
+            String author = csvRecord.get("Author");
+
+            // Check if book already exists
+            Optional<Book> existingBook = bookRepository.findByTitleAndAuthor(title, author);
+            if (existingBook.isPresent()) {
+                // Book already exists, skip to the next record
+                continue;
             }
-            bookRepository.saveAll(books);
 
-            csvParser.close();
-            reader.close();
+            // Create new book if it doesn't exist
+            Book book = new Book();
+            book.setTitle(title);
+            book.setAuthor(author);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            String genresString = csvRecord.get("Genres");
+            genresString = genresString.replaceAll("\\[", "").replaceAll("\\]", ""); // Remove brackets
+            String[] genresArray = genresString.split(", ");
+            Set<String> genresSet = new HashSet<>(Arrays.asList(genresArray));
+            book.setGenres(genresSet);
+
+            // Save the new book to the repository
+            bookRepository.save(book);
         }
+
+        csvParser.close();
+        reader.close();
+
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+}
 }

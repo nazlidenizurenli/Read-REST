@@ -50,7 +50,7 @@ public class LoginController {
         // Check if user already exists
         User existingUser = userService.findByUsername(username);
 
-        if (existingUser != null && existingUser.getPassword().equals(password)) {
+        if (existingUser != null) {
             model.addAttribute("error", "Account already exists. Please login or change username and password.");
             return "login";
         } else {
