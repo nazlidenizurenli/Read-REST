@@ -14,14 +14,6 @@ public class User {
     private String username;
     private String password;
 
-    @ManyToMany
-    @JoinTable(
-        name = "user_book",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
-    private Set<Book> myBooks = new HashSet<>();
-
     // Constructors, getters, and setters
     public User() {}
 
@@ -53,13 +45,5 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Set<Book> getMyBooks() {
-        return myBooks;
-    }
-
-    public void setMyBooks(Set<Book> myBooks) {
-        this.myBooks = myBooks;
     }
 }

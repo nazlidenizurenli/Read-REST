@@ -1,14 +1,13 @@
 package com.ReadAndREST.controllers;
 
-import com.ReadAndREST.models.Book;
-import com.ReadAndREST.models.User;
-import com.ReadAndREST.repositories.BookRepository;
-import com.ReadAndREST.repositories.UserRepository;
+import com.ReadAndREST.models.*;
+import com.ReadAndREST.services.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -21,33 +20,36 @@ import javax.servlet.http.HttpSession;
 public class MyBooksController {
 
     @Autowired
-    private BookRepository bookRepository;
+    private BookService bookService;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserBookMapService userBookMapService;
 
     @PostMapping("/add")
     public String addBookToMyBooks(@RequestBody Long bookId) {
-        System.out.println("Geldim burdayim");
         // Retrieve the current session
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         HttpSession session = request.getSession();
 
         // Get the user from session attribute
-        User currentUser = (User) session.getAttribute("currentUser");
-        System.out.println("Current User is: " + currentUser.getUsername() + currentUser.getPassword());
+        User currentUser = (User) session.getAttribute("loggedInUser");
+        if (currentUser == null) {
+            return "User not logged in.";
+        }
 
         // Find the book by ID
-        Book bookToAdd = bookRepository.findById(bookId).orElse(null);
-        System.out.println("Adding the book: " + bookToAdd.getTitle() + bookToAdd.getId());
-
-        if (currentUser != null && bookToAdd != null) {
-            // Add book to user's collection
-            currentUser.getMyBooks().add(bookToAdd);
-            userRepository.save(currentUser);
-            return "Book added successfully to My Books!";
-        } else {
-            return "Failed to add book. User or book not found.";
+        Book bookToAdd = bookService.findById(bookId);
+        if (bookToAdd == null) {
+            return "Book not found.";
         }
+
+        // Check if the book is already in the user's My Books
+        if (userBookMapService.isBookInMyBooks(currentUser, bookToAdd)) {
+            return "Book is already added to your My Books.";
+        }
+
+        // Add book to user's collection
+        userBookMapService.saveUserBookMap(currentUser, bookToAdd);
+        return "Book added successfully to My Books!";
     }
 }

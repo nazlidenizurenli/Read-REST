@@ -29,9 +29,6 @@ public class Book {
     @Column(name = "genre")
     private Set<String> genres = new HashSet<>();
 
-    @ManyToMany(mappedBy = "myBooks")
-    private Set<User> owners = new HashSet<>();
-
     // Constructors, getters, and setters
     public Book() {}
 
@@ -72,13 +69,5 @@ public class Book {
 
     public void setGenres(Set<String> genres) {
         this.genres = genres;
-    }
-
-    public Set<User> getOwners() {
-        return owners;
-    }
-
-    public void setOwners(Set<User> owners) {
-        this.owners = owners;
     }
 }

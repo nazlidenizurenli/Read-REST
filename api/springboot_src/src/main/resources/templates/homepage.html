@@ -114,14 +114,17 @@
                     bookId: bookId
                 },
                 success: function (response) {
-                    alert("Book added successfully!");
-                    // Update UI: Replace add button with checkmark
-                    var addButton = document.querySelector('.add-button[data-book-id="' + bookId + '"]');
-                    addButton.innerHTML = "&#10003;"; // Unicode checkmark symbol
-                    addButton.disabled = true; // Disable button after adding
-        
-                    // Optionally, update My Books table or hide the add button
-                    updateMyBooksSection();
+                    if (response == "Book added successfully to My Books!") {
+                        alert("Book added successfully!");
+                        var addButton = document.querySelector('.add-button[data-book-id="' + bookId + '"]');
+                        addButton.innerHTML = "&#10003;";
+                        addButton.disabled = true;
+                        updateMyBooksSection();
+                    } else if (response === "Book is already added to your My Books.") {
+                        alert("Book is already added to your My Books.");
+                    } else {
+                        alert("Error: " + response);
+                    }
                 },
                 error: function () {
                     alert("Error adding book.");
