@@ -1,6 +1,7 @@
 package com.ReadAndREST.services;
 
 import com.ReadAndREST.models.Book;
+import com.ReadAndREST.models.User;
 import com.ReadAndREST.repositories.BookRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -30,11 +31,21 @@ public class BookService {
         return bookRepository.findByTitleContainingIgnoreCase(title);
     }
 
+    public Book findById(Long id) {
+        return bookRepository.findById(id).orElse(null);
+    }
+
     @PostConstruct
     public void init() {
         loadBooksFromCSV();
     }
-    @Transactional
+
+    public void addOwner(Book book, User user) {
+        book.getOwners().add(user);
+        bookRepository.save(book);
+    }
+
+@Transactional
 public void loadBooksFromCSV() {
     try {
         ClassPathResource resource = new ClassPathResource("books.csv");

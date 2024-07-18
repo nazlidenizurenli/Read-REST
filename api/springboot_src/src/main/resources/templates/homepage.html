@@ -30,9 +30,10 @@
                             <th>Title</th>
                             <th>Author</th>
                             <th>Genre</th>
+                            <th>Rating</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="myBooksTableBody">
                         <!-- Table rows will be dynamically populated -->
                     </tbody>
                 </table>
@@ -45,6 +46,7 @@
                             <th>Title</th>
                             <th>Author</th>
                             <th>Genre</th>
+                            <th>Match %</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -107,7 +109,7 @@
             console.log("Adding book with ID: " + bookId);
             $.ajax({
                 type: "POST",
-                url: "/mybooks/add",
+                url: "/books/add",
                 data: {
                     bookId: bookId
                 },
@@ -119,11 +121,41 @@
                     addButton.disabled = true; // Disable button after adding
         
                     // Optionally, update My Books table or hide the add button
+                    updateMyBooksSection();
                 },
                 error: function () {
                     alert("Error adding book.");
                 }
             });
+        });
+        // Function to update My Books section
+        function updateMyBooksSection() {
+            $.ajax({
+                type: "GET",
+                url: "/books/getMyBooks",
+                success: function (books) {
+                    var tableBody = $('#myBooksTableBody');
+                    tableBody.empty();
+
+                    books.forEach(function(book) {
+                        var row = "<tr>";
+                        row += "<td>" + book.title + "</td>";
+                        row += "<td>" + book.author + "</td>";
+                        row += "<td>" + book.genres.join(", ") + "</td>";
+                        row += "<td>" + book.rating + "</td>";
+                        row += "</tr>";
+                        tableBody.append(row);
+                    });
+                },
+                error: function () {
+                    alert("Error fetching My Books.");
+                }
+            });
+        }
+
+        // Initial load of My Books section
+        $(document).ready(function() {
+            updateMyBooksSection();
         });
     </script>
 </body>

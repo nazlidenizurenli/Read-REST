@@ -14,11 +14,11 @@ public class User {
     private String username;
     private String password;
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany
     @JoinTable(
         name = "user_book",
-        joinColumns = { @JoinColumn(name = "user_id") },
-        inverseJoinColumns = { @JoinColumn(name = "book_id") }
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private Set<Book> myBooks = new HashSet<>();
 

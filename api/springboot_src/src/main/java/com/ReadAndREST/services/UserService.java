@@ -1,10 +1,12 @@
 package com.ReadAndREST.services;
 
 import com.ReadAndREST.repositories.UserRepository;
+import com.ReadAndREST.models.Book;
 import com.ReadAndREST.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -23,18 +25,20 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void registerUser(String username, String password) {
-        // String hashedPassword = passwordEncoder.encode(password);
-        // User newUser = new User(username, hashedPassword);
-        // userRepository.save(newUser);
+    public void addBookToUser(User user, Book book) {
+        user = userRepository.findById(user.getId()).orElse(null);
+        user.getMyBooks().add(book);
+        userRepository.save(user);
     }
 
-    public void updatePassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user != null) {
-            // String hashedPassword = passwordEncoder.encode(newPassword);
-            // user.setPassword(hashedPassword);
-            // userRepository.save(user);
-        }
+    @Transactional(readOnly = true)
+    public User getUserWithBooks(Long userId) {
+        return userRepository.findById(userId)
+                             .map(user -> {
+                                 user.getMyBooks().size();
+                                 return user;
+                             })
+                             .orElse(null);
     }
+
 }
