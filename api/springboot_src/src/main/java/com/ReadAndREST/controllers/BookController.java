@@ -75,13 +75,54 @@ public class BookController {
         List<UserBookMap> userBooks = userBookMapService.findByUser(loggedInUser);
         if (userBooks.size() >= 5) {
             try {
-                bookService.checkAndSendRecommendations(userBooks, session);
+                // Generate recommendations and store them in session
+                List<BookDto> recommendations = bookService.checkAndSendRecommendations(userBooks, session);
+                session.setAttribute("recommendations", recommendations);
             } catch (Exception e) {
                 e.printStackTrace();
                 return "Error in generating recommendations.";
             }
         } 
         return "Book added successfully to My Books!";
+    }
+
+    @GetMapping("/recommendations")
+    @ResponseBody
+    public ResponseEntity<List<BookDto>> getRecommendations(HttpSession session) {        
+        @SuppressWarnings("unchecked")
+        List<BookDto> recommendations = (List<BookDto>) session.getAttribute("recommendations");
+
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            if (recommendations == null) {
+                recommendations = generateAndStoreRecommendations(loggedInUser, session);
+                
+                if (recommendations == null) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+                }
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
+        }
+        
+        return ResponseEntity.ok(recommendations);
+    }
+
+    public List<BookDto> generateAndStoreRecommendations(User loggedInUser, HttpSession session) {
+        List<UserBookMap> userBooks = userBookMapService.findByUser(loggedInUser);
+        if (userBooks.size() >= 5) {
+            try {
+                // Generate recommendations
+                List<BookDto> recommendations = bookService.checkAndSendRecommendations(userBooks, session);
+                // Store recommendations in session
+                session.setAttribute("recommendations", recommendations);
+                return recommendations;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return Collections.emptyList();  // Return an empty list in case of an error
+            }
+        }
+        return Collections.emptyList();  // Return an empty list if userBooks.size() < 5
     }
 
 

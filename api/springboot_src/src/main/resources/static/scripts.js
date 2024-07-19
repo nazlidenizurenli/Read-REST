@@ -20,7 +20,6 @@ function searchBooks() {
     }
 }
 
-// Function to display search results dynamically
 function displaySearchResults(books) {
     var resultsContainer = document.getElementById("searchResults");
     resultsContainer.innerHTML = "";
@@ -97,6 +96,39 @@ $('#cancelRating').click(function() {
     closeRatingModal();
 });
 
+function getRecommendations() {
+    $.ajax({
+        type: "GET",
+        url: "/books/recommendations",
+        success: function (response) {
+            displayRecommendations(response);
+        },
+        error: function () {
+            alert("Error fetching recommendations.");
+        }
+    });
+}
+
+function displayRecommendations(recommendations) {
+    let container = $('#recommendedBooksTable tbody');
+    container.empty(); // Clear existing recommendations
+    
+    if (recommendations.length > 0) {
+        recommendations.forEach(function(book) {
+            container.append(`
+                <tr>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.genres.join(", ")}</td>
+                    <td>${book.matchPercentage || "N/A"}</td> <!-- Assuming you have matchPercentage in BookDto -->
+                </tr>
+            `);
+        });
+    } else {
+        container.append("<tr><td colspan='4'>No recommendations available.</td></tr>");
+    }
+}
+
 // Function to update My Books section
 function updateMyBooksSection() {
     $.ajax({
@@ -122,7 +154,8 @@ function updateMyBooksSection() {
     });
 }
 
-// Initial load of My Books section
+// Initial load of My Books and Recommended Books section
 $(document).ready(function() {
     updateMyBooksSection();
+    getRecommendations();
 });

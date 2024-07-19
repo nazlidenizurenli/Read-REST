@@ -1,6 +1,8 @@
 package com.ReadAndREST.controllers;
 
+import com.ReadAndREST.dto.BookDto;
 import com.ReadAndREST.models.User;
+import com.ReadAndREST.controllers.BookController;
 import com.ReadAndREST.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpSession; 
 
 @Controller
@@ -16,6 +20,9 @@ public class LoginController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private BookController bookController;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -31,7 +38,10 @@ public class LoginController {
         User user = userService.findByUsername(username);
 
         if (user != null && user.getPassword().equals(password)) {
+            // Clear existing session attributes and initialize for new user
+            session.setAttribute("recommendations", new ArrayList<BookDto>());
             session.setAttribute("loggedInUser", user);
+            bookController.generateAndStoreRecommendations(user, session);
             return "redirect:/homepage";
         } else if (user != null && !user.getPassword().equals(password)){
             model.addAttribute("error", "Wrong credentials: Check username and password.");
@@ -58,6 +68,8 @@ public class LoginController {
             User newUser = new User();
             newUser.setUsername(username);
             newUser.setPassword(password);
+            session.setAttribute("recommendations", new ArrayList<BookDto>());
+            bookController.generateAndStoreRecommendations(newUser, session);
 
             // Save the new user to the database
             userService.save(newUser);

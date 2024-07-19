@@ -3,6 +3,8 @@ package com.ReadAndREST.services;
 import com.ReadAndREST.dto.*;
 import com.ReadAndREST.models.*;
 import com.ReadAndREST.repositories.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -23,6 +25,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Service
@@ -105,48 +109,55 @@ public class BookService {
         }
     }
 
-    public void checkAndSendRecommendations(List<UserBookMap> userBooks, HttpSession session) throws Exception {
-        // Convert UserBookMap to UserBookDto
+    public List<BookDto> checkAndSendRecommendations(List<UserBookMap> userBooks, HttpSession session) throws Exception {
         List<UserBookDto> userBookDtos = userBooks.stream()
             .map(userBookMap -> new UserBookDto(
                 userBookMap.getBook().getId(),
                 userBookMap.getBook().getTitle(),
                 userBookMap.getBook().getAuthor(),
-                new HashSet<>(userBookMap.getBook().getGenres()), // Convert to Set if necessary
+                new HashSet<>(userBookMap.getBook().getGenres()),
                 userBookMap.getRating() // Extract the rating
             ))
         .collect(Collectors.toList());
-        
-        // Get all books
+    
         List<Book> allBooks = bookRepository.findAll();
-
-        // Check if the user has 5 or more books
+    
         if (userBooks.size() >= 5) {
             // Send request to Flask API
-            String recommendations = sendRecommendationsRequest(userBookDtos, allBooks);
-
-            // TODO: Convert the recommendations to correct format
-            // TODO: Return these reccomendations. We need to fix the function signature and maybe add an endpoint so html and js access the return result.
-            // Handle the response (e.g., display recommendations)
-            System.out.println("Recommendations: " + recommendations);
+            String recommendationsJson = sendRecommendationsRequest(userBookDtos, allBooks);
+    
+            // Convert the recommendations to correct format
+            return parseRecommendations(recommendationsJson);
         } else {
-            System.out.println("Not enough books to generate recommendations.");
+            return Collections.emptyList(); // Return an empty list if not enough books
         }
     }
 
-    private String sendRecommendationsRequest(List<UserBookDto> userBooks, List<Book> allBooks) throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
-        // Convert Java objects to JSON
-        String jsonPayload = gson.toJson(new RecommendationRequest(userBooks, allBooks));
-
+    private String sendRecommendationsRequest(List<UserBookDto> userBookDtos, List<Book> allBooks) throws Exception {
+        // Convert lists to JSON
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonUserBooks = objectMapper.writeValueAsString(userBookDtos);
+        String jsonAllBooks = objectMapper.writeValueAsString(allBooks);
+    
+        // Prepare the payload
+        String jsonPayload = String.format("{\"userBooks\": %s, \"allBooks\": %s}", jsonUserBooks, jsonAllBooks);
+    
+        // Send the POST request to the Flask API
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(FLASK_API_URL))
+                .uri(new URI("http://localhost:5000/recommend"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                 .build();
-
+    
+        HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body();
+    
+        return response.body(); // Return the raw JSON response
+    }
+
+    private List<BookDto> parseRecommendations(String jsonResponse) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(jsonResponse, new TypeReference<List<BookDto>>() {});
     }
     
 }

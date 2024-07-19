@@ -1,3 +1,5 @@
+/* General styles */
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f2f5;
@@ -22,22 +24,20 @@ body {
     flex-wrap: wrap; /* Allow items to wrap to the next line */
 }
 
-.search-section, .my-books-section {
+.search-section, .my-books-section, .recommended-books-section {
     background-color: #ffffff;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    width: 48%; /* Adjusted width to fit better with flex-wrap */
     margin-bottom: 20px; /* Add space below */
 }
 
-.recommended-books-section {
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+.search-section {
+    width: 50%; /* Adjusted width to fit better with flex-wrap */
+}
+
+.my-books-section, .recommended-books-section {
     width: 100%; /* Full width below the other sections */
-    margin-top: 20px;
 }
 
 .search-section h2, .my-books-section h2, .recommended-books-section h2 {
@@ -46,7 +46,7 @@ body {
 }
 
 .search-section input[type="text"] {
-    width: 70%;
+    width: 150%;
     padding: 10px;
     margin-right: 10px;
     border: 1px solid #ccc;
@@ -60,6 +60,50 @@ body {
     color: white;
     cursor: pointer;
     border-radius: 5px;
+}
+
+/* Search results section */
+.search-results-section {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 200%; /* Full width */
+    margin-top: 20px;
+    max-height: 300px; /* Adjust height as needed */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.search-results-section table {
+    width: 150%;
+    border-collapse: collapse;
+}
+
+.search-results-section th, .search-results-section td {
+    padding: 15px; /* Increased padding for better spacing */
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.search-results-section th {
+    background-color: #4CAF50; /* Consistent with other sections */
+    color: white;
+    padding: 20px;
+    font-size: 18px;
+}
+
+.search-results-section tbody tr {
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.search-results-section tbody tr:hover {
+    background-color: #f2f2f2;
+}
+
+/* Common styles for book sections */
+.my-books-section, .recommended-books-section {
+    max-height: 400px; /* Set a max-height for scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .my-books-section table, .recommended-books-section table {
@@ -82,7 +126,7 @@ body {
 }
 
 .recommended-books-section th {
-    background-color: #127fbe; /* Different color for recommended books */
+    background-color: #43b3f4; /* Different color for recommended books */
 }
 
 .my-books-section tbody tr, .recommended-books-section tbody tr {
