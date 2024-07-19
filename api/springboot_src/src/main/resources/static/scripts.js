@@ -85,6 +85,7 @@ $('#submitRating').click(function() {
             alert("Rating submitted successfully!");
             closeRatingModal();
             updateMyBooksSection();
+            getRecommendations();
         },
         error: function () {
             alert("Error submitting rating.");
@@ -110,7 +111,7 @@ function updateMyBooksSection() {
                 row += "<td>" + book.title + "</td>";
                 row += "<td>" + book.author + "</td>";
                 row += "<td>" + book.genres.join(", ") + "</td>";
-                row += "<td>" + book.rating + "</td>"; // Display the rating
+                row += "<td>" + book.rating + "</td>";
                 row += "</tr>";
                 tableBody.append(row);
             });

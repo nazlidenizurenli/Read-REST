@@ -70,40 +70,50 @@ public class BookController {
 
         // Add book to user's collection
         userBookMapService.saveUserBookMap(loggedInUser, bookToAdd, rating);
+
+        // Check if the user's collection size is 5 or more
+        List<UserBookMap> userBooks = userBookMapService.findByUser(loggedInUser);
+        if (userBooks.size() >= 5) {
+            try {
+                bookService.checkAndSendRecommendations(userBooks, session);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Error in generating recommendations.";
+            }
+        } 
         return "Book added successfully to My Books!";
     }
 
 
     @GetMapping("/getMyBooks")
-public ResponseEntity<List<BookDto>> getMyBooks(HttpSession session) {
-    User user = (User) session.getAttribute("loggedInUser");
-    if (user == null) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<List<BookDto>> getMyBooks(HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        user = userService.getUserWithBooks(user.getId());
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Get books for the user from UserBookMap
+        List<UserBookMap> userBookMaps = userBookMapService.findByUser(user);
+
+        // Convert Book entities to DTOs
+        List<BookDto> bookDtos = userBookMaps.stream()
+                                            .map(userBookMap -> new BookDto(
+                                                userBookMap.getBook().getId(),
+                                                userBookMap.getBook().getTitle(),
+                                                userBookMap.getBook().getAuthor(),
+                                                new HashSet<>(userBookMap.getBook().getGenres()), // Convert to Set if necessary
+                                                userBookMap.getRating() // Extract the rating
+                                            ))
+                                            .collect(Collectors.toList());
+
+        // Return the list of books
+        return ResponseEntity.ok(bookDtos);
     }
-
-    user = userService.getUserWithBooks(user.getId());
-
-    if (user == null) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    // Get books for the user from UserBookMap
-    List<UserBookMap> userBookMaps = userBookMapService.findByUser(user);
-
-    // Convert Book entities to DTOs
-    List<BookDto> bookDtos = userBookMaps.stream()
-                                         .map(userBookMap -> new BookDto(
-                                             userBookMap.getBook().getId(),
-                                             userBookMap.getBook().getTitle(),
-                                             userBookMap.getBook().getAuthor(),
-                                             new HashSet<>(userBookMap.getBook().getGenres()), // Convert to Set if necessary
-                                             userBookMap.getRating() // Extract the rating
-                                         ))
-                                         .collect(Collectors.toList());
-
-    // Return the list of books
-    return ResponseEntity.ok(bookDtos);
-}
-
 
 }
