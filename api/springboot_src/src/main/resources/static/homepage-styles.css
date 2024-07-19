@@ -1,5 +1,4 @@
 /* General styles */
-
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f2f5;
@@ -33,7 +32,7 @@ body {
 }
 
 .search-section {
-    width: 50%; /* Adjusted width to fit better with flex-wrap */
+    width: 80%; /* Adjusted width to fit better with flex-wrap */
 }
 
 .my-books-section, .recommended-books-section {
@@ -46,7 +45,7 @@ body {
 }
 
 .search-section input[type="text"] {
-    width: 150%;
+    width: 70%; /* Adjusted width */
     padding: 10px;
     margin-right: 10px;
     border: 1px solid #ccc;
@@ -68,14 +67,14 @@ body {
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    width: 200%; /* Full width */
+    width: 80%; /* Adjusted width */
     margin-top: 20px;
     max-height: 300px; /* Adjust height as needed */
     overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .search-results-section table {
-    width: 150%;
+    width: 100%; /* Full width */
     border-collapse: collapse;
 }
 
@@ -119,7 +118,7 @@ body {
 }
 
 .my-books-section th, .recommended-books-section th {
-    background-color: #4CAF50; /* Make header background consistent */
+    background-color: #e5ae2e; /* Make header background consistent */
     color: white;
     padding: 20px;
     font-size: 18px;

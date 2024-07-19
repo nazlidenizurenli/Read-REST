@@ -68,14 +68,14 @@ public class LoginController {
             User newUser = new User();
             newUser.setUsername(username);
             newUser.setPassword(password);
-            session.setAttribute("recommendations", new ArrayList<BookDto>());
-            bookController.generateAndStoreRecommendations(newUser, session);
-
             // Save the new user to the database
             userService.save(newUser);
-
+            
             // Log in the user immediately after sign up
             session.setAttribute("loggedInUser", newUser); // Store the newly created user in session
+
+            session.setAttribute("recommendations", new ArrayList<BookDto>());
+            bookController.generateAndStoreRecommendations(newUser, session);
 
             return "redirect:/homepage";
         }

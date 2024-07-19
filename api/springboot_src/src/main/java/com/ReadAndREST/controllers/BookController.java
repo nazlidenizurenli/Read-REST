@@ -76,7 +76,7 @@ public class BookController {
         if (userBooks.size() >= 5) {
             try {
                 // Generate recommendations and store them in session
-                List<BookDto> recommendations = bookService.checkAndSendRecommendations(userBooks, session);
+                List<UserBookDto> recommendations = userBookMapService.checkAndSendRecommendations(userBooks, session);
                 session.setAttribute("recommendations", recommendations);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -88,9 +88,9 @@ public class BookController {
 
     @GetMapping("/recommendations")
     @ResponseBody
-    public ResponseEntity<List<BookDto>> getRecommendations(HttpSession session) {        
+    public ResponseEntity<List<UserBookDto>> getRecommendations(HttpSession session) {        
         @SuppressWarnings("unchecked")
-        List<BookDto> recommendations = (List<BookDto>) session.getAttribute("recommendations");
+        List<UserBookDto> recommendations = (List<UserBookDto>) session.getAttribute("recommendations");
 
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser != null) {
@@ -108,12 +108,12 @@ public class BookController {
         return ResponseEntity.ok(recommendations);
     }
 
-    public List<BookDto> generateAndStoreRecommendations(User loggedInUser, HttpSession session) {
+    public List<UserBookDto> generateAndStoreRecommendations(User loggedInUser, HttpSession session) {
         List<UserBookMap> userBooks = userBookMapService.findByUser(loggedInUser);
         if (userBooks.size() >= 5) {
             try {
                 // Generate recommendations
-                List<BookDto> recommendations = bookService.checkAndSendRecommendations(userBooks, session);
+                List<UserBookDto> recommendations = userBookMapService.checkAndSendRecommendations(userBooks, session);
                 // Store recommendations in session
                 session.setAttribute("recommendations", recommendations);
                 return recommendations;
