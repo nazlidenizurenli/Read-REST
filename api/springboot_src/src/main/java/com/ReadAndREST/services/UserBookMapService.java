@@ -20,10 +20,11 @@ public class UserBookMapService {
         return userBookMapRepository.findByUserAndBook(user, book).isPresent();
     }
 
-    public void saveUserBookMap(User user, Book book) {
+    public void saveUserBookMap(User user, Book book, Integer rating) {
         UserBookMap userBookMap = new UserBookMap();
         userBookMap.setUser(user);
         userBookMap.setBook(book);
+        userBookMap.setRating(rating);
         userBookMapRepository.save(userBookMap);
     }
 }

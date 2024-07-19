@@ -1,19 +1,21 @@
 package com.ReadAndREST.dto;
 
-import java.util.Set;
+import java.util.*;
 
 public class BookDto {
     private Long id;
     private String title;
     private String author;
-    private Set<String> genres;
+    private Set<String> genres; // Use Set instead of List
+    private Integer rating; // Mandatory rating field
 
     // Constructor
-    public BookDto(Long id, String title, String author, Set<String> genres) {
+    public BookDto(Long id, String title, String author, Set<String> genres, Integer rating) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.genres = genres;
+        this.rating = rating;
     }
 
     // Getters and Setters
@@ -47,5 +49,13 @@ public class BookDto {
 
     public void setGenres(Set<String> genres) {
         this.genres = genres;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 }

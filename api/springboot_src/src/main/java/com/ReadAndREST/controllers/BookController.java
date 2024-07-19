@@ -51,11 +51,12 @@ public class BookController {
 
     @PostMapping("/add")
     @ResponseBody
-    public String addBookToUser(@RequestParam Long bookId, HttpSession session) {
+    public String addBookToUser(@RequestParam Long bookId, @RequestParam Integer rating, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
             return "User not logged in.";
         }
+
         // Find the book by ID
         Book bookToAdd = bookService.findById(bookId);
         if (bookToAdd == null) {
@@ -68,33 +69,41 @@ public class BookController {
         }
 
         // Add book to user's collection
-        userBookMapService.saveUserBookMap(loggedInUser, bookToAdd);
+        userBookMapService.saveUserBookMap(loggedInUser, bookToAdd, rating);
         return "Book added successfully to My Books!";
     }
 
+
     @GetMapping("/getMyBooks")
-    public ResponseEntity<List<BookDto>> getMyBooks(HttpSession session) {
-        User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        user = userService.getUserWithBooks(user.getId());
-
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        // Get books for the user from UserBookMap
-        List<UserBookMap> userBookMaps = userBookMapService.findByUser(user);
-
-        // Convert Book entities to DTOs
-        List<BookDto> bookDtos = userBookMaps.stream()
-                                             .map(userBookMap -> userBookMap.getBook())
-                                             .map(book -> new BookDto(book.getId(), book.getTitle(), book.getAuthor(), book.getGenres()))
-                                             .collect(Collectors.toList());
-
-        // Return the list of books
-        return ResponseEntity.ok(bookDtos);
+public ResponseEntity<List<BookDto>> getMyBooks(HttpSession session) {
+    User user = (User) session.getAttribute("loggedInUser");
+    if (user == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    user = userService.getUserWithBooks(user.getId());
+
+    if (user == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    // Get books for the user from UserBookMap
+    List<UserBookMap> userBookMaps = userBookMapService.findByUser(user);
+
+    // Convert Book entities to DTOs
+    List<BookDto> bookDtos = userBookMaps.stream()
+                                         .map(userBookMap -> new BookDto(
+                                             userBookMap.getBook().getId(),
+                                             userBookMap.getBook().getTitle(),
+                                             userBookMap.getBook().getAuthor(),
+                                             new HashSet<>(userBookMap.getBook().getGenres()), // Convert to Set if necessary
+                                             userBookMap.getRating() // Extract the rating
+                                         ))
+                                         .collect(Collectors.toList());
+
+    // Return the list of books
+    return ResponseEntity.ok(bookDtos);
+}
+
+
 }

@@ -22,13 +22,16 @@ public class UserBookMap {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    private Integer rating;
+
     // Default constructor
     public UserBookMap() {}
 
     // Parameterized constructor
-    public UserBookMap(User user, Book book) {
+    public UserBookMap(User user, Book book, Integer rating) {
         this.user = user;
         this.book = book;
+        this.rating = rating;
     }
 
     // Getters and Setters
@@ -54,5 +57,13 @@ public class UserBookMap {
 
     public void setBook(Book book) {
         this.book = book;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 }
