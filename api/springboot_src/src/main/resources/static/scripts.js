@@ -1,155 +1,127 @@
-// // Function to handle book search and display
-// function searchBooks() {
-//     var searchInput = document.getElementById("searchInput").value.trim();
+// Function to search books and display results
+function searchBooks() {
+    var searchTitle = document.getElementById("searchInput").value.trim();
+    if (searchTitle !== "") {
+        $.ajax({
+            type: "GET",
+            url: "/books/search",
+            data: {
+                query: searchTitle
+            },
+            success: function (response) {
+                displaySearchResults(response);
+            },
+            error: function () {
+                alert("Error fetching search results.");
+            }
+        });
+    } else {
+        alert("Please enter a book title.");
+    }
+}
 
-//     fetch(`/api/search?query=${searchInput}`)
-//         .then(response => response.json())
-//         .then(data => {
-//             var searchResults = document.getElementById("searchResults");
-//             searchResults.innerHTML = ""; // Clear previous results
+// Function to display search results dynamically
+function displaySearchResults(books) {
+    var resultsContainer = document.getElementById("searchResults");
+    resultsContainer.innerHTML = "";
 
-//             data.forEach(book => {
-//                 var row = document.createElement("div");
-//                 row.classList.add("book-row");
+    if (books.length === 0) {
+        resultsContainer.innerHTML = "<p>No books found.</p>";
+    } else {
+        var tableHtml = "<table><thead><tr><th>Title</th><th>Author</th><th>Genre</th><th>Action</th></tr></thead><tbody>";
+        books.forEach(function (book) {
+            tableHtml += "<tr>";
+            tableHtml += "<td>" + book.title + "</td>";
+            tableHtml += "<td>" + book.author + "</td>";
+            tableHtml += "<td>" + book.genres.join(", ") + "</td>";
+            // Add the add button for each book entry
+            tableHtml += "<td><button class='add-button' data-book-id='" + book.id + "'>+</button></td>";
+            tableHtml += "</tr>";
+        });
+        tableHtml += "</tbody></table>";
+        resultsContainer.innerHTML = tableHtml;
+    }
+}
 
-//                 var title = document.createElement("h3");
-//                 title.textContent = book.title;
-//                 row.appendChild(title);
+// Event delegation to handle add book functionality
+$(document).on('click', '.add-button', function() {
+    selectedBookId = $(this).data('book-id');
+    openRatingModal();
+});
 
-//                 var author = document.createElement("p");
-//                 author.textContent = `Author: ${book.author}`;
-//                 row.appendChild(author);
+function openRatingModal() {
+    $('#ratingModal').show();
+}
 
-//                 var genre = document.createElement("p");
-//                 genre.textContent = `Genre: ${book.genres.join(", ")}`;
-//                 row.appendChild(genre);
+function closeRatingModal() {
+    $('#ratingModal').hide();
+}
 
-//                 var addButton = document.createElement("button");
-//                 addButton.textContent = "+";
-//                 addButton.classList.add("add-button");
-//                 addButton.onclick = function() {
-//                     addToMyBooks(book.id);
-//                 };
-//                 row.appendChild(addButton);
+$(document).on('click', '.star', function() {
+    selectedRating = $(this).data('value');
+    $('.star').each(function() {
+        if ($(this).data('value') <= selectedRating) {
+            $(this).addClass('selected');
+        } else {
+            $(this).removeClass('selected');
+        }
+    });
+});
 
-//                 searchResults.appendChild(row);
-//             });
-//         })
-//         .catch(error => {
-//             console.error('Error searching books:', error);
-//         });
-// }
+$('#submitRating').click(function() {
+    if (selectedRating === 0) {
+        alert("Please select a rating.");
+        return;
+    }
 
-// // Function to handle adding a book to My Books with a rating
-// function addToMyBooks(bookId) {
-//     // Display the rating modal
-//     var modal = document.getElementById("ratingModal");
-//     modal.style.display = "block";
+    $.ajax({
+        type: "POST",
+        url: "/books/add",
+        data: {
+            bookId: selectedBookId,
+            rating: selectedRating
+        },
+        success: function (response) {
+            alert("Rating submitted successfully!");
+            closeRatingModal();
+            updateMyBooksSection();
+        },
+        error: function () {
+            alert("Error submitting rating.");
+        }
+    });
+});
 
-//     // Dynamically create rating buttons
-//     var modalContent = document.getElementById("ratingButtons");
-//     modalContent.innerHTML = "";
-//     for (var i = 1; i <= 10; i++) {
-//         var button = document.createElement("button");
-//         button.innerText = i;
-//         button.onclick = function() {
-//             var rating = this.innerText;
-//             addBookToMyBooks(bookId, rating);
-//             modal.style.display = "none"; // Hide modal after rating
-//         };
-//         modalContent.appendChild(button);
-//     }
+$('#cancelRating').click(function() {
+    closeRatingModal();
+});
 
-//     // Close modal when the close button is clicked
-//     var closeBtn = document.getElementsByClassName("close")[0];
-//     closeBtn.onclick = function() {
-//         modal.style.display = "none";
-//     };
+// Function to update My Books section
+function updateMyBooksSection() {
+    $.ajax({
+        type: "GET",
+        url: "/books/getMyBooks",
+        success: function (books) {
+            var tableBody = $('#myBooksTableBody');
+            tableBody.empty();
+    
+            books.forEach(function(book) {
+                var row = "<tr>";
+                row += "<td>" + book.title + "</td>";
+                row += "<td>" + book.author + "</td>";
+                row += "<td>" + book.genres.join(", ") + "</td>";
+                row += "<td>" + book.rating + "</td>"; // Display the rating
+                row += "</tr>";
+                tableBody.append(row);
+            });
+        },
+        error: function () {
+            alert("Error fetching My Books.");
+        }
+    });
+}
 
-//     // Close modal if user clicks outside of it
-//     window.onclick = function(event) {
-//         if (event.target == modal) {
-//             modal.style.display = "none";
-//         }
-//     };
-// }
-
-// // Function to add book to My Books with the given rating
-// function addBookToMyBooks(bookId, rating) {
-//     fetch('/api/add-book-to-my-books', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ bookId: bookId, rating: rating }),
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Failed to add book to My Books');
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         console.log('Book added to My Books:', data);
-//         // Refresh My Books table or update UI as needed
-//         fetchMyBooks(); // Optional: Update My Books table after adding a book
-//     })
-//     .catch(error => {
-//         console.error('Error adding book to My Books:', error);
-//     });
-// }
-
-// // Function to fetch and display user's My Books
-// function fetchMyBooks() {
-//     fetch('/api/my-books')
-//         .then(response => response.json())
-//         .then(data => {
-//             var myBooksTable = document.getElementById("myBooksTable").getElementsByTagName('tbody')[0];
-//             myBooksTable.innerHTML = ""; // Clear previous content
-
-//             data.forEach(book => {
-//                 var row = myBooksTable.insertRow();
-//                 var titleCell = row.insertCell(0);
-//                 var authorCell = row.insertCell(1);
-//                 var genreCell = row.insertCell(2);
-//                 var actionCell = row.insertCell(3);
-
-//                 titleCell.textContent = book.title;
-//                 authorCell.textContent = book.author;
-//                 genreCell.textContent = book.genres.join(", ");
-
-//                 var removeButton = document.createElement("button");
-//                 removeButton.textContent = "Remove";
-//                 removeButton.onclick = function() {
-//                     removeBookFromMyBooks(book.id);
-//                 };
-//                 actionCell.appendChild(removeButton);
-//             });
-//         })
-//         .catch(error => {
-//             console.error('Error fetching My Books:', error);
-//         });
-// }
-
-// // Function to remove book from My Books
-// function removeBookFromMyBooks(bookId) {
-//     fetch(`/api/remove-book-from-my-books/${bookId}`, {
-//         method: 'DELETE',
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Failed to remove book from My Books');
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         console.log('Book removed from My Books:', data);
-//         fetchMyBooks(); // Refresh My Books table after removing a book
-//     })
-//     .catch(error => {
-//         console.error('Error removing book from My Books:', error);
-//     });
-// }
-
-// // Initial fetch of My Books when the page loads
-// window.onload = fetchMyBooks;
+// Initial load of My Books section
+$(document).ready(function() {
+    updateMyBooksSection();
+});
