@@ -127,7 +127,7 @@ public class BookController {
 
 
     @GetMapping("/getMyBooks")
-    public ResponseEntity<List<BookDto>> getMyBooks(HttpSession session) {
+    public ResponseEntity<List<UserBookDto>> getMyBooks(HttpSession session) {
         User user = (User) session.getAttribute("loggedInUser");
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -143,8 +143,8 @@ public class BookController {
         List<UserBookMap> userBookMaps = userBookMapService.findByUser(user);
 
         // Convert Book entities to DTOs
-        List<BookDto> bookDtos = userBookMaps.stream()
-                                            .map(userBookMap -> new BookDto(
+        List<UserBookDto> userbookDtos = userBookMaps.stream()
+                                            .map(userBookMap -> new UserBookDto(
                                                 userBookMap.getBook().getId(),
                                                 userBookMap.getBook().getTitle(),
                                                 userBookMap.getBook().getAuthor(),
@@ -154,7 +154,7 @@ public class BookController {
                                             .collect(Collectors.toList());
 
         // Return the list of books
-        return ResponseEntity.ok(bookDtos);
+        return ResponseEntity.ok(userbookDtos);
     }
 
 }
