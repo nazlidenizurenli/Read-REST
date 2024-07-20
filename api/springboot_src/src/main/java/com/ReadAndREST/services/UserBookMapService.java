@@ -17,8 +17,14 @@ import com.ReadAndREST.repositories.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Service class for managing operations related to user book mappings.
+ * This service provides methods for finding user book mappings, checking if a book
+ * is in a user's collection, saving user book mappings, and sending recommendations.
+ */
 @Service
 public class UserBookMapService {
+
     @Autowired
     private UserBookMapRepository userBookMapRepository;
 
@@ -27,7 +33,6 @@ public class UserBookMapService {
 
     /**
      * Retrieves a list of {@link UserBookMap} entities associated with the specified user.
-     *
      * This method queries the {@link UserBookMapRepository} to find all book mappings for the given user.
      *
      * @param user the {@link User} for whom to find the book mappings
@@ -39,7 +44,6 @@ public class UserBookMapService {
 
     /**
      * Checks if a specific book is present in the user's book collection.
-     *
      * This method queries the {@link UserBookMapRepository} to determine if the specified book
      * is associated with the given user. It returns {@code true} if the book is found, otherwise {@code false}.
      *
@@ -53,7 +57,6 @@ public class UserBookMapService {
 
     /**
      * Saves a {@link UserBookMap} entity to the repository.
-     *
      * This method creates a new {@link UserBookMap} instance, sets the user, book, and rating,
      * and then saves the instance to the {@link UserBookMapRepository}.
      *
@@ -71,7 +74,6 @@ public class UserBookMapService {
 
     /**
      * Checks the user's book collection, prepares recommendations, and sends them for processing.
-     *
      * This method converts the list of {@link UserBookMap} entities into {@link UserBookDto} objects,
      * retrieves all books from the repository, and if the user has 5 or more books, it sends the data
      * to a Flask API for recommendations. The method then parses and returns the recommendations.
@@ -105,7 +107,6 @@ public class UserBookMapService {
             return Collections.emptyList(); // Return an empty list if not enough books
         }
     }
-
 
     /**
      * Sends a recommendation request to a Flask API.
@@ -146,7 +147,6 @@ public class UserBookMapService {
 
     /**
      * Parses a JSON response and converts it into a list of {@link UserBookDto} objects.
-     *
      * This method uses the {@link ObjectMapper} to deserialize the JSON response into a list
      * of {@link UserBookDto} instances. It expects the JSON response to be in a format that can
      * be mapped to a list of {@link UserBookDto}.

@@ -2,7 +2,6 @@ package com.ReadAndREST.controllers;
 
 import com.ReadAndREST.dto.BookDto;
 import com.ReadAndREST.models.User;
-import com.ReadAndREST.controllers.BookController;
 import com.ReadAndREST.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,8 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 
-import javax.servlet.http.HttpSession; 
+import javax.servlet.http.HttpSession;
 
+/**
+ * Controller class that handles user login, signup, and homepage requests.
+ * This controller manages user authentication, session management, and redirects users to the appropriate views based on their authentication status.
+ */
 @Controller
 public class LoginController {
 
@@ -24,11 +27,27 @@ public class LoginController {
     @Autowired
     private BookController bookController;
 
+    /**
+     * Displays the login page.
+     *
+     * @return the name of the login view
+     */
     @GetMapping("/login")
     public String showLoginPage() {
         return "login";
     }
 
+    /**
+     * Handles user login requests.
+     * Validates the user's credentials and, if correct, initializes the user's session and redirects to the homepage.
+     * If credentials are incorrect, it returns to the login page with an error message.
+     *
+     * @param username the username of the user attempting to log in
+     * @param password the password of the user attempting to log in
+     * @param model    the model to pass attributes to the view
+     * @param session  the HTTP session to manage user state
+     * @return the name of the view to render, or a redirect URL
+     */
     @PostMapping("/login")
     public String login(@RequestParam("username") String username,
                         @RequestParam("password") String password,
@@ -52,6 +71,17 @@ public class LoginController {
         }
     }
 
+    /**
+     * Handles user signup requests.
+     * Checks if the username already exists; if not, creates a new user and logs them in immediately.
+     * If the username already exists, returns to the login page with an error message.
+     *
+     * @param username the username of the user signing up
+     * @param password the password of the user signing up
+     * @param model    the model to pass attributes to the view
+     * @param session  the HTTP session to manage user state
+     * @return the name of the view to render, or a redirect URL
+     */
     @PostMapping("/signup")
     public String signup(@RequestParam("username") String username,
                         @RequestParam("password") String password,
@@ -81,6 +111,15 @@ public class LoginController {
         }
     }
 
+    /**
+     * Displays the homepage for the logged-in user.
+     * If the user is logged in, it passes user data to the homepage view. 
+     * If the user is not logged in, it redirects to the login page.
+     *
+     * @param model   the model to pass attributes to the view
+     * @param session the HTTP session to retrieve user state
+     * @return the name of the view to render, or a redirect URL
+     */
     @GetMapping("/homepage")
     public String showHomePage(Model model, HttpSession session) { // Add HttpSession parameter
         // Retrieve logged-in user from session

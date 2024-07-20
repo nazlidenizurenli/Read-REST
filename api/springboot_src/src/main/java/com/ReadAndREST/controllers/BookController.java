@@ -20,6 +20,11 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
+/**
+ * Controller class responsible for managing book-related operations.
+ * Handles requests related to book retrieval, search, addition to the user's collection,
+ * and generating book recommendations.
+ */
 @RestController
 @RequestMapping("/books")
 public class BookController {
@@ -36,6 +41,11 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    /**
+     * Retrieves all books from the database.
+     *
+     * @return a list of all books
+     */
     @GetMapping
     @RequestMapping("/all")
     public List<Book> getAllBooks() {
@@ -43,12 +53,27 @@ public class BookController {
         return books;
     }
 
+    /**
+     * Searches for books based on a query string.
+     *
+     * @param query the search query string
+     * @return a list of books matching the query
+     */
     @GetMapping("/search")
     @ResponseBody
     public List<Book> searchBooks(@RequestParam("query") String query) {
         return bookService.searchBooks(query);
     }
 
+    /**
+     * Adds a book to the logged-in user's collection with a specified rating.
+     * Generates recommendations if the user's collection size is 5 or more.
+     *
+     * @param bookId the ID of the book to add
+     * @param rating the rating for the book
+     * @param session the HTTP session to manage user state
+     * @return a message indicating the result of the operation
+     */
     @PostMapping("/add")
     @ResponseBody
     public String addBookToUser(@RequestParam Long bookId, @RequestParam Integer rating, HttpSession session) {
@@ -86,6 +111,13 @@ public class BookController {
         return "Book added successfully to My Books!";
     }
 
+    /**
+     * Retrieves book recommendations for the logged-in user from the session.
+     * If recommendations are not available, generates new recommendations.
+     *
+     * @param session the HTTP session to manage user state
+     * @return a ResponseEntity containing the list of recommendations or an error status
+     */
     @GetMapping("/recommendations")
     @ResponseBody
     public ResponseEntity<List<UserBookDto>> getRecommendations(HttpSession session) {        
@@ -108,6 +140,14 @@ public class BookController {
         return ResponseEntity.ok(recommendations);
     }
 
+    /**
+     * Generates and stores book recommendations for the logged-in user in the session.
+     * Only generates recommendations if the user has 5 or more books.
+     *
+     * @param loggedInUser the currently logged-in user
+     * @param session      the HTTP session to manage user state
+     * @return a list of recommendations or an empty list if no recommendations could be generated
+     */
     public List<UserBookDto> generateAndStoreRecommendations(User loggedInUser, HttpSession session) {
         List<UserBookMap> userBooks = userBookMapService.findByUser(loggedInUser);
         if (userBooks.size() >= 5) {
@@ -125,7 +165,12 @@ public class BookController {
         return Collections.emptyList();  // Return an empty list if userBooks.size() < 5
     }
 
-
+    /**
+     * Retrieves the books in the logged-in user's collection.
+     *
+     * @param session the HTTP session to manage user state
+     * @return a ResponseEntity containing the list of books in the user's collection or an error status
+     */
     @GetMapping("/getMyBooks")
     public ResponseEntity<List<UserBookDto>> getMyBooks(HttpSession session) {
         User user = (User) session.getAttribute("loggedInUser");
@@ -148,8 +193,8 @@ public class BookController {
                                                 userBookMap.getBook().getId(),
                                                 userBookMap.getBook().getTitle(),
                                                 userBookMap.getBook().getAuthor(),
-                                                new HashSet<>(userBookMap.getBook().getGenres()), // Convert to Set if necessary
-                                                userBookMap.getRating() // Extract the rating
+                                                new HashSet<>(userBookMap.getBook().getGenres()),
+                                                userBookMap.getRating()
                                             ))
                                             .collect(Collectors.toList());
 
