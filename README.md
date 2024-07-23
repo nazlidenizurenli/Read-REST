@@ -31,7 +31,6 @@ The project is organized into several key directories:
 
 - **api**: Contains the Java code for the RESTful API.
 - **ml**: Contains the Python code for machine learning tasks.
-- **web**: Contains the frontend code including HTML, CSS, and JavaScript files.
 - **scripts**: Additional scripts for setup and configuration.
 
 ## Setup and Installation
@@ -43,10 +42,3 @@ The project is organized into several key directories:
 - MySQL server
 - Maven
 - Node.js and npm
-
-### Steps
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/ReadAndREST.git
-   cd ReadAndREST
