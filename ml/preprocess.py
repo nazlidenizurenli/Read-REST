@@ -64,7 +64,7 @@ def get_top_genres(all_books_json):
     
     return top_genres
 
-def filter_genres(books_json, top_genres):
+def filter_genres(books_json, top_genres, mode):
     """
     Filter genres in the book entries to keep only the top genres.
     Exclude entries with empty genres or fewer than 3 genres after filtering.
@@ -72,6 +72,7 @@ def filter_genres(books_json, top_genres):
     Parameters:
     books_json (list of dict): List of books data in JSON format.
     top_genres (list of str): List of top genres.
+    mode: True if user books, False if all books
     
     Returns:
     list of dict: List of books with filtered genres.
@@ -95,12 +96,21 @@ def filter_genres(books_json, top_genres):
         filtered_genres = filtered_genres[:3]
         
         # Create a new book entry with filtered genres
-        filtered_book = {
-            'id': book.get('id'),
-            'title': book.get('title'),
-            'author': book.get('author'),
-            'genres': filtered_genres
-        }
+        if mode:
+            filtered_book = {
+                'id': book.get('id'),
+                'title': book.get('title'),
+                'author': book.get('author'),
+                'genres': filtered_genres,
+                'rating': book.get('rating')
+            }
+        else:
+            filtered_book = {
+                'id': book.get('id'),
+                'title': book.get('title'),
+                'author': book.get('author'),
+                'genres': filtered_genres
+            }
         
         filtered_books.append(filtered_book)
     

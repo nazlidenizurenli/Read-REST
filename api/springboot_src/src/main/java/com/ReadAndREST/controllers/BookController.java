@@ -101,7 +101,7 @@ public class BookController {
         if (userBooks.size() >= 5) {
             try {
                 // Generate recommendations and store them in session
-                List<UserBookDto> recommendations = userBookMapService.checkAndSendRecommendations(userBooks, session);
+                List<BookRecommendation> recommendations = userBookMapService.checkAndSendRecommendations(userBooks, session);
                 session.setAttribute("recommendations", recommendations);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -120,9 +120,9 @@ public class BookController {
      */
     @GetMapping("/recommendations")
     @ResponseBody
-    public ResponseEntity<List<UserBookDto>> getRecommendations(HttpSession session) {        
+    public ResponseEntity<List<BookRecommendation>> getRecommendations(HttpSession session) {        
         @SuppressWarnings("unchecked")
-        List<UserBookDto> recommendations = (List<UserBookDto>) session.getAttribute("recommendations");
+        List<BookRecommendation> recommendations = (List<BookRecommendation>) session.getAttribute("recommendations");
 
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser != null) {
@@ -148,12 +148,12 @@ public class BookController {
      * @param session      the HTTP session to manage user state
      * @return a list of recommendations or an empty list if no recommendations could be generated
      */
-    public List<UserBookDto> generateAndStoreRecommendations(User loggedInUser, HttpSession session) {
+    public List<BookRecommendation> generateAndStoreRecommendations(User loggedInUser, HttpSession session) {
         List<UserBookMap> userBooks = userBookMapService.findByUser(loggedInUser);
         if (userBooks.size() >= 5) {
             try {
                 // Generate recommendations
-                List<UserBookDto> recommendations = userBookMapService.checkAndSendRecommendations(userBooks, session);
+                List<BookRecommendation> recommendations = userBookMapService.checkAndSendRecommendations(userBooks, session);
                 // Store recommendations in session
                 session.setAttribute("recommendations", recommendations);
                 return recommendations;

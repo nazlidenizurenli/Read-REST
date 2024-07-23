@@ -120,7 +120,7 @@ function displayRecommendations(recommendations) {
                     <td>${book.title}</td>
                     <td>${book.author}</td>
                     <td>${book.genres.join(", ")}</td>
-                    <td>${book.matchPercentage || "N/A"}</td> <!-- Assuming you have matchPercentage in BookDto -->
+                    <td>${book.matchPercentage || "N/A"}</td>
                 </tr>
             `);
         });

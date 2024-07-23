@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
-import com.ReadAndREST.dto.UserBookDto;
+import com.ReadAndREST.dto.*;
 import com.ReadAndREST.models.*;
 import com.ReadAndREST.repositories.*;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -84,7 +84,7 @@ public class UserBookMapService {
      *         otherwise, an empty list
      * @throws Exception if an error occurs during the recommendation request or parsing
      */
-    public List<UserBookDto> checkAndSendRecommendations(List<UserBookMap> userBooks, HttpSession session) throws Exception {
+    public List<BookRecommendation> checkAndSendRecommendations(List<UserBookMap> userBooks, HttpSession session) throws Exception {
         List<UserBookDto> userBookDtos = userBooks.stream()
             .map(userBookMap -> new UserBookDto(
                 userBookMap.getBook().getId(),
@@ -100,6 +100,8 @@ public class UserBookMapService {
         if (userBooks.size() >= 5) {
             // Send request to Flask API
             String recommendationsJson = sendRecommendationsRequest(userBookDtos, allBooks);
+
+            System.out.println("Recommnedations: " + recommendationsJson);
 
             // Convert the recommendations to correct format
             return parseRecommendations(recommendationsJson);
@@ -142,6 +144,7 @@ public class UserBookMapService {
 
         // Return response from client.
         System.out.println("JSON Response is: " + response);
+        System.out.println("JSON Content is: " + response.body());
         return response.body();
     }
 
@@ -157,9 +160,8 @@ public class UserBookMapService {
      * @see ObjectMapper
      * @see TypeReference
      */
-    private List<UserBookDto> parseRecommendations(String jsonResponse) throws IOException {
+    private List<BookRecommendation> parseRecommendations(String jsonResponse) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        // TODO: Might need to create a Response Object to fit the way Python sends responses.
-        return objectMapper.readValue(jsonResponse, new TypeReference<List<UserBookDto>>() {});
+        return objectMapper.readValue(jsonResponse, new TypeReference<List<BookRecommendation>>() {});
     }
 }
