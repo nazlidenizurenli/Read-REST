@@ -1,39 +1,52 @@
-# Read&REST Book Recommendation System
+# ReadAndREST
 
-## Overview
+ReadAndREST is a comprehensive book recommendation system designed to offer personalized book suggestions to users. It leverages machine learning to analyze user preferences and provide tailored book recommendations based on various criteria such as genre, author, and user ratings.
 
-Read&REST is a book recommendation system that leverages both collaborative filtering and content-based filtering to provide personalized book recommendations. The system consists of a Java-based RESTful API for handling user interactions and a Python-based machine learning component for generating recommendations.
+## Key Features
 
-## Features
-
-- **User Book Ratings:** Users can rate books they have read.
-- **Personalized Recommendations:** The system generates book recommendations based on user preferences and reading history.
-- **Hybrid Approach:** Combines collaborative filtering and content-based filtering for improved recommendations.
-- **Web Interface:** A user-friendly web interface for users to interact with the system.
+- **User Authentication**: Secure login and registration system.
+- **Book Management**: Users can search for books and add them to their personal collection.
+- **Personalized Recommendations**: Based on user preferences and reading history.
+- **Interactive Web Interface**: User-friendly interface for managing book collections and viewing recommendations.
 
 ## Technologies Used
 
 ### Backend
-- **Java:** For the RESTful API to handle user requests.
-- **Spring Boot:** For creating the RESTful API.
-- **MySQL:** For storing user data, book data, and ratings.
-- **Flask:** Python framework for handling ML requests.
 
-### Machine Learning
-- **Python:** For data processing and machine learning tasks.
-- **Pandas:** For data manipulation.
-- **Scikit-learn:** For machine learning algorithms.
-- **Numpy:** For numerical computations.
+- **Java**: For implementing the RESTful API.
+- **Spring Boot**: To create a robust backend service.
+- **Python**: For machine learning tasks.
+- **Flask**: To serve the machine learning model.
+- **MySQL**: As the relational database to store user and book data.
 
 ### Frontend
-- **HTML/CSS/JavaScript:** For the web interface.
-- **Bootstrap:** For responsive design.
+
+- **HTML/CSS**: For structuring and styling the web pages.
+- **JavaScript**: For dynamic content and interactivity.
+- **jQuery**: Simplifying DOM manipulation and event handling.
 
 ## Project Structure
 
-- **app.py:** Main Flask application file handling incoming requests.
-- **preprocess.py:** Module for data preprocessing tasks.
-- **encoding.py:** Module for encoding genres and ratings.
-- **model.py:** Module for machine learning model training and predictions.
-- **templates/**: HTML templates for the web interface.
-- **static/**: Static files like CSS and JavaScript.
+The project is organized into several key directories:
+
+- **api**: Contains the Java code for the RESTful API.
+- **ml**: Contains the Python code for machine learning tasks.
+- **web**: Contains the frontend code including HTML, CSS, and JavaScript files.
+- **scripts**: Additional scripts for setup and configuration.
+
+## Setup and Installation
+
+### Prerequisites
+
+- Java 8 or higher
+- Python 3.7 or higher
+- MySQL server
+- Maven
+- Node.js and npm
+
+### Steps
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/your-username/ReadAndREST.git
+   cd ReadAndREST
